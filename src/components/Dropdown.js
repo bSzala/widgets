@@ -1,8 +1,22 @@
-import React, {useState} from "react";
+import React, {useState, useEffect, useRef} from "react";
 
 const Dropdown = ({options, selected, onSelectedChange}) => {
 
     const [open, setOpen] = useState(false);
+    const ref = useRef();
+
+    useEffect(() => {
+        const onBodyClick = (e) => {
+            if(ref.current === null || ref.current.contains(e.target))
+                return;
+            setOpen(false);
+        };
+        document.body.addEventListener('click', onBodyClick);
+
+        return () => {
+          document.body.removeEventListener('click', onBodyClick);
+        };
+    }, []);
 
     const renderOptions = options.map(o => {
         if(o.value === selected.value)
@@ -15,7 +29,7 @@ const Dropdown = ({options, selected, onSelectedChange}) => {
     });
 
     return (
-        <div className="ui form">
+        <div className="ui form" ref={ref}>
             <div className="field">
                 <label htmlFor="" className="label">Select a Color</label>
                 <div onClick={() => setOpen(!open)}
